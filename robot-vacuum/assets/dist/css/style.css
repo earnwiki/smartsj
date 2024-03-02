@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&amp;display=swap');
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+}
+p {
+    font-size: 16px;
+}
+.navbar {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 1px;
+    background-color:#000!important;
+}
+.navbar-dark .navbar-nav .nav-link {
+    color: rgb(255 255 255 / 85%);
+}
+.grey {
+    background-color:#fafafa
+}
+.blue {
+    color: #5287e2
+}
+.btn {
+    padding: 15px 15px;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+.btn-sq {
+    border-radius: 0rem;
+}
+ ul {
+    margin-bottom: 0rem;
+    padding-left: 0rem;
+ }
+ li {
+     list-style-type: none;
+     margin-left: 0px;
+ }
+ .offcanvas {
+     line-height: 2rem;
+     font-size: 14px;
+ }
+ ul.menu-main {
+      display:none;
+  }
+ ul.menu-sub-1 {
+      display:none;
+  }
+  .fa-brands, .fab {
+    font-size: 20px;
+    color: #fff;
+}
+.bg-dark {
+    background-color: #000!important;
+}
+.btn-black {
+    color: #fff;
+    background-color: #000;
+    border-color: #000;
+}
+.btn-red {
+    color: #fff;
+    background-color: #ff5252;
+    border-color: #ff5252;
+}
+.btn-black:hover {
+    color: #fff;
+    background-color: #000;
+    border-color: #000;
+}
+.btn-white {
+    color: #000;
+    background-color: #fff;
+    border-color: #000;
+}
+.small, small {
+   font-size: 1em;
+}
+footer {
+    font-family: 'Montserrat', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+}
+footer p {
+    color: #fff;
+}
+footer a {
+    color: #fff;
+}
+footer a:hover {
+    color: #fff;
+}
+@media (max-width: 819px) {
+  .buysupherb, .storelocator {
+    display:none!important;
+  }
+  ul.menu-sub-1 {
+      display:block;
+  }
+}  
+@media (max-width: 800px) {
+  .menu-bar {
+    display:none!important;
+  }
+  ul.menu-main {
+      display:block;
+  }
+}

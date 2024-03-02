@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html>
+	
+<!--   smartsj.com/hawkeye/checkout.php?pid=2 by smartsj.com Website Copier/3.x [XR&CO'2014], Wed, 28 Feb 2024 04:59:02 GMT -->
+<!-- Added by smartsj.com --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by smartsj.com -->
+<head>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Performance Checkout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, minimal-ui, user-scalable=no">
+    <meta name="application-name" content="">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="assets/images/favicon.html" type="image/x-icon">
+    <link href="appAssets/c2/css/css.css" rel="stylesheet">
+    <link rel="stylesheet" href="appAssets/c2/css/site.min.css">
+    <link rel="stylesheet" href="appAssets/c2/css/order-alt.min.css">
+	<script type="text/javascript" src="appAssets/js/jquery.min.3-6-0.js"></script>
+	<script src="../js.braintreegateway.com/v2/braintree.js"></script>
+	<script>
+		var efc = '';
+	</script>
+	<style>
+		.loader,
+		.loader:before,
+		.loader:after {
+		  border-radius: 50%;
+		  width: 2.5em;
+		  height: 2.5em;
+		  -webkit-animation-fill-mode: both;
+		  animation-fill-mode: both;
+		  -webkit-animation: load7 1.8s infinite ease-in-out;
+		  animation: load7 1.8s infinite ease-in-out;
+		}
+		.loader {
+		  color: #fff;
+		  font-size: 10px;
+		  margin: -10px auto;
+		  position: relative;
+		  text-indent: -9999em;
+		  -webkit-transform: translateZ(0);
+		  -ms-transform: translateZ(0);
+		  transform: translateZ(0);
+		  -webkit-animation-delay: -0.16s;
+		  animation-delay: -0.16s;
+		}
+		.loader:before,
+		.loader:after {
+		  content: '';
+		  position: absolute;
+		  top: 0;
+		}
+		.loader:before {
+		  left: -7.5em;
+		  -webkit-animation-delay: -0.32s;
+		  animation-delay: -0.32s;
+		}
+		.loader:after {
+		  left: 7.5em;
+		}
+		@-webkit-keyframes load7 {
+		  0%,
+		  80%,
+		  100% {
+		    box-shadow: 0 2.5em 0 -1.3em;
+		  }
+		  40% {
+		    box-shadow: 0 2.5em 0 0;
+		  }
+		}
+		@keyframes load7 {
+		  0%,
+		  80%,
+		  100% {
+		    box-shadow: 0 2.5em 0 -1.3em;
+		  }
+		  40% {
+		    box-shadow: 0 2.5em 0 0;
+		  }
+		}
+		#processing-modal{
+			height: 100vh;
+		    width: 100vw;
+		    position: fixed;
+		    z-index: 100;
+		    top: 0;
+		    background: #00000044;
+		    backdrop-filter: blur(3px);
+	    }
+	    #processing-modal .main{
+		    width: 300px;
+		    height: 200px;
+		    background: #000000aa;
+		    text-align: center;
+		    position: absolute;
+		    top: 50%;
+		    left: 50%;
+		    margin-left: -150px;
+		    margin-top: -50px;
+		    line-height: 100px;
+		    border-radius: 30px;
+		    box-shadow: 0 0 20px #ffffff66;
+		    color: white;
+	    }
+		#error-modal{
+			height: 100vh;
+		    width: 100vw;
+		    position: fixed;
+		    z-index: 100;
+		    top: 0;
+		    background: #00000044;
+		    backdrop-filter: blur(3px);
+	    }
+	    #error-modal .main{
+		    background: #fff;
+		    text-align: center;
+		    position: absolute;
+		    top: 50%;
+		    left: 50%;
+		    border-radius: 30px;
+		    box-shadow: 0 0 20px #00000077;
+		    color: #000;
+		    transform: translate(-50%, -50%);
+		    padding: 30px;
+	    }
+	    .variants{
+		    display: flex;
+		    list-style-type:none;
+		    padding:0;
+		    margin-bottom: 20px;
+		}
+	    .variants li{
+			margin: 0 auto;
+/*
+		    width:100px;
+		    height:40px;
+		    position:relative;
+*/
+		}
+	    .variants label, .variants input {
+		    display:block;
+/* 		    position:absolute; */
+		    top:0;
+		    left:0;
+		    right:0;
+		    bottom:0;
+		}
+		.aVariant{
+			background: var(--bg);
+		    width: 90px;
+		    aspect-ratio: 1;
+		    margin: 0 auto;
+		    border-radius: 50%;
+			border: 5px solid orange;
+		}
+		.checkmark{display: none}
+		.checked .checkmark {
+			display: inline-block;
+			transform: rotate(45deg);
+			height: 25px;
+			width: 12px;
+/* 			margin-left: 60%;  */
+    		margin: 24px 0 0 0;
+			border-bottom: 7px solid var(--color);
+			border-right: 7px solid var(--color);
+		}
+		.variants input[type="radio"] {
+		    opacity:0.011;
+		    z-index:100;
+		}
+		
+		.variants input[type="radio"]:checked + label {
+/* 		    background:yellow; */
+		}
+		
+		.variants label {
+		    padding:5px;
+/* 		    border:1px solid #CCC;  */
+		    cursor:pointer;
+		    z-index:90;	    
+		    text-align: center;
+		    line-height: 29px;
+		}
+		
+		.variants label:hover {
+/* 		    background:#DDD; */
+		}
+		.variants{margin-top: 10px;
+			text-align: center;
+		}
+		#braintree-paypal-button{
+			width: 50%!important;
+		    height: inherit!important;
+			margin: 0 auto;
+    	}
+    	#pp-container-wrapper{
+	    	position: relative;
+    	}
+    	#paypal-container{
+	    	position: static;
+    	}
+    	#btn-overlay{
+			position: absolute;
+		    top: 0;
+		    height: 90px;
+		    width: 100%;
+		    display: block;
+		    opacity: .5;
+    	}
+    	#tr-addon{display: none}
+    	.addonBoxGray{color: #666}
+
+
+		.sliders{
+			position: relative;
+/* 			border: 1px solid black; */
+			height:35px;
+			box-sizing: content-box;
+			border-radius: 4px;
+/* 			background: blue; */
+		}
+		.sliders input[type="range"]{
+			appearance: none;
+		    width: calc(100%);
+		    widthX: calc(100% - 25px);
+		    position: absolute;
+		    background: transparent;
+		    pointer-events: none;
+		    top: 0;
+		    bottom: 0;
+		}
+		.sliders .slider-qty2{
+			margin-left: 10px;
+		}
+		input[type="range"]::-webkit-slider-runnable-track{
+		    -webkit-appearance: none;
+		    height: 5px;
+		}
+		input[type="range"]::-moz-range-track{
+		    -moz-appearance: none;
+		    height: 5px;
+		}
+		input[type="range"]::-ms-track{
+		    appearance: none;
+		    height: 5px;
+		}
+		input[type="range"]::-webkit-slider-thumb{
+		    -webkit-appearance: none;
+		    height: 30px;
+		    width: 10px;
+		    background-color: #3264fe;
+		    cursor: pointer;
+		    margin-top: -9px;
+		    pointer-events: auto;
+		    border-radius: 5px;
+		    background-color: #ffffff;
+		    border: 4px solid black;
+		}
+		input[type="range"]::-moz-range-thumb{
+		    -webkit-appearance: none;
+		    height: 30px;
+		    width: 10px;
+		    cursor: pointer;
+		    border-radius: 5px;
+		    background-color: #3264fe;
+		    pointer-events: auto;
+		    background-color: #ffffff;
+		    border: 4px solid black;
+		}
+		input[type="range"]::-ms-thumb{
+		    appearance: none;
+		    height: 30px;
+		    width: 10px;
+		    cursor: pointer;
+		    border-radius: 5px;
+		    background-color: #3264fe;
+		    pointer-events: auto;
+		    margin-top: 0px;
+		    background-color: #ffffff;
+		    border: 4px solid black;
+		}
+		input[type="range"]:active::-webkit-slider-thumb{
+		    background-color: green;
+		    border: 4px solid green;
+		}
+		.sligerbg{
+			display: flex;
+			gap: 10px;
+		}
+		.sligerbg > div {
+		    height: 40px;
+		    line-height: 40px;
+		    text-align: center;
+		    border-radius: 5px;
+		    box-sizing: border-box;
+		    background-size: 450px;
+		    text-shadow: 0 0 4px #000;
+		    font-size: 1.8em;
+		    color: white;   
+    	}
+		.qty1{
+background: rgb(255,147,177);
+background: linear-gradient(113deg, rgba(255,147,177,1) 0%, rgba(207,0,176,1) 100%);
+/* 			background: url(assets/images/greencrack-min.jpg); */
+/*
+			background-size: 100%;
+		    background-position: center;
+*/
+		}
+		.qty2{
+background: rgb(243,255,0);
+background: linear-gradient(113deg, rgba(243,255,0,1) 16%, rgba(9,9,121,1) 17%, rgba(243,255,0,1) 18%, rgba(9,9,121,1) 19%, rgba(0,212,255,1) 100%);
+/* 			background: url(assets/images/bluedream-min.jpg); */
+/*
+			background-size: 100%;
+		    background-position: center;
+*/
+		}
+		.qty3{
+			background: url(assets/images/cherrypie-min.html);
+			background-size: 100%;
+		    background-position: center;
+		}
+		.descriptions h1{
+			text-align: center;
+			line-height: 1em;
+		}
+		.descriptions h2{
+			text-align: center;
+			font-size: 1em;
+			line-height: 1em;
+		}
+		.gpay-card-info-container {
+			height: 60px!important;
+		}
+		#braintree-paypal-button{
+			display: block;
+		    overflow: hidden;
+		    background-color: #019cde;
+		    height: 60px!important;
+		    border-radius: 4px;
+		    margin: 0 auto 15px;
+			width: 100%!important;
+		}
+		#braintree-paypal-button img{
+			width: auto!important;
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body class="ordergoldenstandardstemplate order-alt">
+	 <!--<div><img src="/assets/images/christmas-banner.jpg"></div>-->
+    <div class="wrapper">
+      <header>
+        <div class="container">
+          <div class="header-inner">
+            <div class="logo">
+                <img src="assets/images/hawkeyeslogo_BL_240x%402x.png" alt="Logo" class="no-lazy">
+            </div>
+			<div class="right-phone">Need help with your order?  Call Customer Support at 603-696-3293 </div>
+          </div>
+        </div>
+      </header>
+      <main>
+        <section class="section-1">
+          <div class="container">
+            <div class="banner ">
+              <div class="w_outer" style="--img:url(assets/images/IMG_7529-Edit-min.jpg) ">
+                <div class="w_inner">
+	                
+	               <div class="w_item ">
+                    <div class="w_thumb">
+                      <img src="assets/images/jennifer.jpg" alt="" class="img-view b-loaded">
+                    </div>
+                    <div class="w_content_wrap">
+                      <h4 class="w_title">Jennifer B. <span>· Albuquerque, NM</span></h4>
+                      <div class="w_desc">
+                        <p>I always had trouble with my vision when driving at night, and glasses didn’t work for me. My friend told me about HawkEye, she said it works perfectly for her. I gave it a try, and I must say I’m surprised at how well it works! The best part is, I can wear it over my glasses, and I’m able to see everything so clear, it’s wonderful.</p>
+                        <ul class="comment-like">
+                          <li>Like</li>
+                          <li>· Reply</li>
+                          <li>· <i class="icon-fblike"></i> <span>28</span></li>
+                          <li class="time">· Feb. 27, 2024 5:32 PM</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+	                
+	               <div class="w_item ">
+                    <div class="w_thumb">
+                      <img src="assets/images/matt.jpg" alt="" class="img-view b-loaded">
+                    </div>
+                    <div class="w_content_wrap">
+                      <h4 class="w_title">Matt N. <span>· Topeka, KS</span></h4>
+                      <div class="w_desc">
+                        <p>HawkEye is freaking awesome. I highly recommend it!</p>
+                        <ul class="comment-like">
+                          <li>Like</li>
+                          <li>· Reply</li>
+                          <li>· <i class="icon-fblike"></i> <span>12</span></li>
+                          <li class="time">· Feb. 25, 2024 6:28 PM</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+	                
+	               <div class="w_item ">
+                    <div class="w_thumb">
+                      <img src="assets/images/james.jpg" alt="" class="img-view b-loaded">
+                    </div>
+                    <div class="w_content_wrap">
+                      <h4 class="w_title">James M. <span>· Cedar Rapids, IA</span></h4>
+                      <div class="w_desc">
+                        <p>I’m a truck driver and I’m always driving at night. When I started driving trucks, I never experienced a migraine. Recently, I got one so bad I couldn’t even focus on the road. I did some research and found HawkEye. I was convinced by all the positive reviews and ended up buying one. It has helped me see better at night and I haven’t experienced a migraine since I started using it! Thank you HawkEye!</p>
+                        <ul class="comment-like">
+                          <li>Like</li>
+                          <li>· Reply</li>
+                          <li>· <i class="icon-fblike"></i> <span>33</span></li>
+                          <li class="time">· Feb. 22, 2024 4:55 PM</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pro-text">
+              <p class="title">
+                <strong></strong> </p>
+            </div>
+          </div> <!--/container-->
+        </section> <!-- /row-wrapper-->
+        <section class="section-2">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="item-view item-view-user-online">
+                  <h2 class="title">
+                    {itemView} people are viewing this item </h2>
+                </div>
+                <div class="coupon-apply">
+                  <h2 class="title">
+                    YOUR {couponPrice} OFF COUPON HAS BEEN APPROVED </h2>
+                </div>
+                <div class="step-title">
+                  <h2 class="title">
+                    STEP 1: SELECT ORDER QUANTITY </h2>
+                </div>
+                <div id="js-widget-products" class="product-list products-widget" data-options="{ }">
+                  <input type="hidden" id="hdfSelectedProduct" value="25">
+                  <div class="product-heading">
+                    <div>Items</div>
+                    <div>Prices</div>
+                  </div>
+	<style>
+		.selection{
+			border: 1px solid #666;
+			border-radius: 3px;
+			overflow: hidden;
+		}
+		.heading{
+			background: #30bd51; /*#ffee00;*/
+		    font-weight: 900;
+		    color: white;
+			border-bottom: 1px solid #666;
+			padding: 5px;
+			font-size: 1.3em
+		}
+		.threeCols{
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			padding: 10px;
+		    font-weight: bold;
+			font-size: large;
+		}
+		.colOne{
+			flex: 0
+		}
+		.otherCols{
+			flex: 1
+		}
+		.otherCols img{
+			width: 100%
+		}
+		.msrp{
+			text-decoration: line-through;
+			color: red;
+		    font-weight: 400;
+		}
+		.label{
+			display: block;
+			margin-bottom: 10px
+		}
+		.checked-item {
+		    border-width: 1px;
+		    background-color: #E9F4FF;
+		    border-color: #36A1F9;
+		}
+		dialog::backdrop {
+			background: rgba(0, 0, 0, 0.25);
+			backdrop-filter: blur(3px);
+
+		}
+		dialog:modal {
+			border-radius: 5px;
+		}
+		.dialogButtonContainer{
+			display: flex;
+			gap: 10px;
+		}
+		.modalDialog img{
+			max-height: calc(100vh - 150px);
+			max-width: calc(100vw - 80px);
+		}
+	</style>
+
+					<label class="label" for="product_1">
+						<div class="selection">
+							<div class="heading">1 Pair of HawkEye Lenses</div>
+							<div class="threeCols">
+								<div class="colOne">
+									<input type="radio" id="product_1" data-id="1" data-variants='["Classic","Modern"]' name="product" value="1">
+								</div>
+								<div class="otherCols"><img src="assets/images/package-1-h.c-min.png"></div>
+								<div class="otherCols">
+									<div>
+										1x HawkEye Driving Glasses<br>
+										<span class="msrp"><span class='currency'></span>74.99</span><br>
+										<span class='currency'></span>49.95									</div>
+								</div>
+							</div>
+						</div>
+					</label>
+					<label class="label" for="product_2">
+						<div class="selection">
+							<div class="heading">Buy 1 Get 1 Free - 2 Great Designs!</div>
+							<div class="threeCols">
+								<div class="colOne">
+									<input type="radio" id="product_2" data-id="2" data-variants='["Classic","Modern","Both"]' name="product" value="2">
+								</div>
+								<div class="otherCols"><img src="assets/images/package-2-h.c-min.png"></div>
+								<div class="otherCols">
+									<div>
+										2x HawkEye Driving Glasses<br>
+										<span class="msrp"><span class='currency'></span>149.98</span><br>
+										<span class='currency'></span>74.99									</div>
+								</div>
+							</div>
+						</div>
+					</label>
+					<label class="label" for="product_3">
+						<div class="selection">
+							<div class="heading">3 Pairs of HawkEye + 3 Cases + Expedited Shipping!</div>
+							<div class="threeCols">
+								<div class="colOne">
+									<input type="radio" id="product_3" data-id="3" data-variants='["Classic","Modern","Both"]' name="product" value="3">
+								</div>
+								<div class="otherCols"><img src="assets/images/package-3-h.c.1-min.png"></div>
+								<div class="otherCols">
+									<div>
+										3x Hawk Eyes + 3x Cases + Exedited Shipping<br>
+										<span class="msrp"><span class='currency'></span>260.55</span><br>
+										<span class='currency'></span>99.99									</div>
+								</div>
+							</div>
+						</div>
+					</label>
+					<label class="label" for="product_4">
+						<div class="selection">
+							<div class="heading">Holiday Package</div>
+							<div class="threeCols">
+								<div class="colOne">
+									<input type="radio" id="product_4" data-id="4" data-variants='["Classic","Modern","Both"]' name="product" value="4">
+								</div>
+								<div class="otherCols"><img src="assets/images/package-4h%2bspy-min.png"></div>
+								<div class="otherCols">
+									<div>
+										2x HawkEye Driving Glasses + Spy Bulb<br>
+										<span class="msrp"><span class='currency'></span>260.00</span><br>
+										<span class='currency'></span>109.99									</div>
+								</div>
+							</div>
+						</div>
+					</label>
+                </div>
+                <div data-r="true" class="wysiwyg-content statistical ">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="td-name">1x </td>
+                        <td class="td-price"><span class='currency'></span>29.99</td>
+                      </tr>
+                      <tr id="tr-addon-case">
+                        <td class="td-addon-case-text"></td>
+                        <td class="td-addon-case-price"><span class='currency'></span></td>
+                      </tr>
+                      <tr>
+                        <td class="td-shipping-text">Shipping:</td>
+                        <td class="td-shipping"><span class='currency'></span>8.95</td>
+                      </tr>
+                      <tr style="display: none;">
+                        <td>Taxes &amp; Fees*:</td>
+                        <td class="td-taxes-fees"><span class='currency'></span>0.00</td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td>Grand Total:</td>
+                        <td class="grand-total"><span class='currency'></span>58.90</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div> <!--/span-->
+              <div class="col-md-6">
+                <div class="step-title">
+                  <h2 class="title">
+                    STEP 2: SELECT STYLE </h2>
+                </div>
+                <div>
+                    <ul class="variants">
+							<li class="var-Classic eachVariant">
+								<input class='theVariants' type='radio' id='v_Classic' name='variants' value='Classic' />
+								<label for='v_Classic'>Classic									<div class='aVariant' style='--bg: url(assets/images/classic-min-no-text.jpg);background-repeat: no-repeat;background-position: center;background-size: 100px;width: 110px;border-radius: 10px;padding-top: 35px;border-color: black;;'><div class='checkmark' style='--color: black;'></div></div>
+								</label>
+							</li>
+							<li class="var-Modern eachVariant">
+								<input class='theVariants' type='radio' id='v_Modern' name='variants' value='Modern' />
+								<label for='v_Modern'>Modern									<div class='aVariant' style='--bg: url(assets/images/modern-min-no-text.jpg);background-repeat: no-repeat;background-position: center;background-size: 100px;width: 110px;border-radius: 10px;padding-top: 35px;border-color: black;;'><div class='checkmark' style='--color: black;'></div></div>
+								</label>
+							</li>
+							<li class="var-Both eachVariant">
+								<input class='theVariants' type='radio' id='v_Both' name='variants' value='Both' />
+								<label for='v_Both'>Both									<div class='aVariant' style='--bg: url(assets/images/both-min-no-text.jpg);background-repeat: no-repeat;background-position: center;background-size: 100px;width: 110px;border-radius: 10px;padding-top: 11px;border-color: black;;'><div class='checkmark' style='--color: Black;'></div></div>
+								</label>
+							</li>
+					</ul>
+	                
+                </div>
+                <div class="step-title">
+                  <h2 class="title">
+                    STEP 3: ADD ONS </h2>
+                </div>
+                <div class="addon-box-case">
+	                <label style="font-weight: 500; font-size: 1.1em;"><input type="checkbox" id="addon-input-case" name="addon" value="1">Yes!  Give me the case!</label>
+	                <p style="padding: 10px 0 20px 0;">One Chance Offer: By placing your order today, we'll add a Case for each pair of HawkEye Glasses for only an additional <span id='addon-case-price'>$</span> and ship it with your order for FREE.</p>
+                </div>
+<!--
+                <div class="addonBox2">
+	                <label style="font-weight: 500; font-size: 1.1em;"><input type="checkbox" id="addon2" name="addon2" value="1"> Yes! Give me the Warranty!</label>
+	                <p style="padding: 10px 0 20px 0;">One Chance Offer: By placing your order today, we'll add a 2 Year Warranty for each Door Ringer for only an additional <span id='addon-price2'>$10</span>.</p>
+                </div>
+-->
+                <div class="step-title">
+                  <h2 class="title">STEP 4: PAYMENT METHODS</h2>
+                </div>
+                <div class="ct_image_wrap cc-img">
+                  <picture>
+                    <img src="assets/images/paypal_creditcard_images.png" alt="" class="no-lazy">
+                  </picture>
+                </div>
+                <div class="w_button btn-order-now btn-next  ">
+                  <button>
+                    <span>CHECKOUT</span>
+                  </button>
+                </div>
+                <div class="orderst-form hidden">
+                  <div class="step-title js-customer-title">
+                    <h2 class="title">
+                      STEP 5: CUSTOMER INFORMATION </h2>
+                  </div>
+                  <div class="widget-customer-form   ">
+                    <form id="frmCustomer" class="frmCustomer">
+	                <input type="hidden" id="efc" name="_ef_transaction_id" value=""/>
+                      <div class="full-name">
+                        <div class="form-group">
+                          <label for="customer_firstname">First Name</label>
+                          <input id="customer_firstname" name="first_name" class="shipping-firstname" type="text" maxlength="30" placeholder="First Name" required="">
+                          <span class="error-message hidden">This field is required.</span>
+                        </div>
+                        <div class="form-group">
+                          <label for="customer_lastname">Last Name</label>
+                          <input id="customer_lastname" name="last_name" class="shipping-lastname" type="text" maxlength="30" placeholder="Last Name" required="">
+                          <span class="error-message hidden">This field is required.</span>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="customer_email">Email Address</label>
+                        <input id="customer_email" name="email" class="customer-email" type="email" maxlength="200" placeholder="Email Address" required="" email="">
+                        <span class="error-message hidden">Please enter valid email address</span>
+                      </div>
+
+                      <!-- ID for latam countries -->
+
+                      <!-- End -->
+                      <div class="form-group">
+                        <label for="customer_phone">Phone</label>
+                        <input id="customer_phone" name="phone" class="customer-phone" type="tel" maxlength="20" placeholder="Phone" required="">
+                        <span class="error-message hidden">Please enter a valid phone number.</span>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="widget-shipping-form hidden">
+                    <form id="frmShipping" class="frmShipping" novalidate="">
+                      <div class="form-group">
+                        <label for="shipping_address1">Address Line 1</label>
+                        <input id="shipping_address1" name="address1" class="shipping-address1" type="text" maxlength="80" placeholder="Address Line 1" required="">
+                        <span class="error-message hidden">This field is required.</span>
+                      </div>
+                      <div class="form-group">
+                        <label for="shipping_address2">Address Line 2</label>
+                        <input id="shipping_address2" name="address2" class="shipping-address2" type="text" maxlength="30" placeholder="Address Line 2">
+                        <span class="error-message hidden">This field is required.</span>
+                      </div>
+                      <div class="form-group">
+                        <label for="shipping_city">City</label>
+                        <input id="shipping_city" name="city" class="shipping-city" type="text" maxlength="30" placeholder="City" required="">
+                        <span class="error-message hidden">This field is required.</span>
+                      </div>
+                      <div class="form-group">
+                        <label for="shipping_country">Country</label>
+                        <div class="custom-select">
+	                      <select id="shipping_country" name="country" class="shipping-country" required="">
+							<option value="US" selected="selected">United States</option>
+							<option value="CA">Canada</option>
+							<option value="AU">Australia</option>
+							<option value="NZ">New Zealand</option>
+							<option value="GB">United Kingdom</option>
+	                      </select>
+                        </div>
+                      </div>
+                      <div class="two-column">
+                        <div class="form-group">
+                          <label for="shipping_province">State</label>
+                          <div class="custom-select">
+                            <select id="shipping_province" name="state" class="shipping-province input-valid" required=""><option value="">----</option><option value="A">Armed Forces Africa</option><option value="AA">Armed Forces Americas</option><option value="AK">Alaska</option><option value="AL">Alabama</option><option value="AP">Armed Forces Pacific</option><option value="AR">Arkansas</option><option value="AS">American Samoa</option><option value="AZ">Arizona</option><option value="C">Armed Forces Canada</option><option value="CA">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DC">Districtof Columbia</option><option value="DE">Delaware</option><option value="E">Armed Forces Europe</option><option value="FL">Florida</option><option value="FM">Federated Statesof Micronesia</option><option value="GA">Georgia</option><option value="GU">Guam</option><option value="HI">Hawaii</option><option value="IA">Iowa</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="M">Armed Forces Middle East</option><option value="MA">Massachusetts</option><option value="MD">Maryland</option><option value="ME">Maine</option><option value="MH">Republicof Marshall Islands</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MO">Missouri</option><option value="MP">Northern Mariana Islands</option><option value="MS">Mississippi</option><option value="MT">Montana</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="NE">Nebraska</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NV">Nevada</option><option value="NY">New York</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="PR">Puerto Rico</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VA">Virginia</option><option value="VI">Virgin Islands</option><option value="VT">Vermont</option><option value="WA">Washington</option><option value="WI">Wisconsin</option><option value="WV">West Virginia</option><option value="WY">Wyoming</option></select>
+                            <span class="error-message hidden">This field is required.</span>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="shipping_postal">Zip/Postcode</label>
+                          <input id="shipping_postal" name="zip" class="shipping-postal" type="text" maxlength="10" placeholder="Zip/Postcode" required="" pattern="\d{5}([ \-]\d{4})?">
+                          <span class="error-message hidden">This field is required.</span>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="widget-billing-form   ">
+                    <div class="js_choose_billing">
+                      <div class="w_radio">
+                        <input type="radio" id="radio_same_as_shipping" name="radio_choose_billing" value="yes" checked="checked">
+                        <label for="radio_same_as_shipping">
+                          Billing Address same as Shipping
+                        </label>
+                        <i class="icon-check"></i>
+                      </div>
+                      <div class="w_radio">
+                        <input type="radio" id="radio_different_shipping" value="no" name="radio_choose_billing">
+                        <label for="radio_different_shipping">
+                          Billing Address different as Shipping
+                        </label>
+                        <i class="icon-check"></i>
+                      </div>
+                    </div>
+                    <form id="frmBilling" class="frmBilling hidden" novalidate="">
+                      <div class="billing-title">
+                        <h3>BILLING INFORMATION</h3>
+                      </div>
+                      
+                      <div class="billing-title billing-heading-title">
+                        <h3>Billing Address</h3>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="billing_address1">Address Line 1</label>
+                        <input id="billing_address1" name="billing_address1" class="billing-address1" type="text" maxlength="80" placeholder="Address Line 1" required="">
+                        <span class="error-message hidden">This field is required.</span>
+                      </div>
+                      <div class="form-group">
+                        <label for="billing_address2">Address Line 2</label>
+                        <input id="billing_address2" name="billing_address2" class="billing-address2" type="text" maxlength="30" placeholder="Address Line 2">
+                        <span class="error-message hidden">This field is required.</span>
+                      </div>
+                      <div class="form-group">
+                        <label for="billing_city">City</label>
+                        <input id="billing_city" name="billing_city" class="billing-city" type="text" maxlength="30" placeholder="City" required="">
+                        <span class="error-message hidden">This field is required.</span>
+                      </div>
+                      <div class="form-group">
+                        <label for="billing_country">Country</label>
+                        <div class="custom-select">
+                          <select id="billing_country" name="billing_country" class="billing-country" required="">
+                          </select>
+                        </div>
+                        <span class="error-message hidden">This field is required.</span>
+                      </div>
+                      <div class="two-column">
+                        <div class="form-group">
+                          <label for="billing_province">State/Province</label>
+                          <div class="custom-select">
+                            <select id="billing_province" name="billing_state" class="billing-province " required="">
+                              <option value="">--</option>
+                            </select>
+                            <span class="error-message hidden">This field is required.</span>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="billing_postal">Zip/Postcode</label>
+                          <input id="billing_postal" name="billing_zip" class="billing-postal" type="text" maxlength="10" placeholder="Zip/Postcode" required="">
+                          <span class="error-message hidden">This field is required.</span>
+                        </div>
+                      </div>
+                      
+                    </form>
+                  </div>
+                  <div class="widget-creditcard-form  hidden">
+                    <div class="creditcard-title">
+                      <h3>Credit Card Information:</h3>
+                    </div>
+                    <form id="frmCreditCard" class="frmCreditCard" novalidate="">
+	                  <input type="hidden" id="exmonth" name="exmonth" value="">
+	                  <input type="hidden" id="exyear" name="exyear" value="">
+                      <div class="form-group">
+                        <div>
+                          <input id="creditcard_creditcardnumber" class="creditcard-creditcardnumber" name="cardnumber" type="tel" minlength="12" maxlength="16" placeholder="Credit Card #" pattern="[\d*-]+" required="" autocomplete="cc-number">
+                          <i class="icon-lock"></i>
+                          <span class="error-message hidden">Invalid credit card number.</span>
+                        </div>
+                      </div>
+                      <div class="two-column ">
+                        <div class="form-group">
+                          <span class="error-message hidden">Invalid card expiration date.</span>
+                        </div>
+                        <div class="form-group ">
+                          <div>
+                            <input id="creditcard_cvv" class="creditcard-cvv" name="cvc" type="tel" minlength="3" maxlength="4" placeholder="CVV Code" required="" autocomplete="cc-csc">
+                            <i class="icon-question-circle"></i>
+                            <span class="error-message hidden">Must comply with a valid format.</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="cvv_popup_overlay">
+                        <div class="cvv_popup_wrap">
+                          <div class="cvv_popup_content">
+                            <span class="close"><i class="icon-close"></i></span>
+                            <h2>Where can I find my Security Code?</h2>
+                            <p>The security code is a three digit number, located on the back of any Visa&nbsp;<sup>®</sup>&nbsp;or MasterCard&nbsp;<sup>®</sup>&nbsp;on the right side of the signature strip as illustrated.&nbsp;<strong> <br>Last 3 Digits of account number panel:</strong></p>
+                            <p><span><img alt="card" width="205" height="120" src="assets/images/card.png" class=" b-loaded"></span></p>
+                            <p><br><strong>Visa&nbsp;<sup>®</sup>&nbsp;and MasterCard&nbsp;<sup>®</sup></strong></p>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div data-r="true" class="wysiwyg-content expiration_date ">
+                    <span>Expiration:</span>
+                    <div class="two-column">
+                      <div class="form-group">
+                        <div class="custom-select">
+                          <select name="monthddl" id="monthddl">
+                            <option value="01">01 (Jan)</option>
+                            <option value="02">02 (Feb)</option>
+                            <option value="03">03 (Mar)</option>
+                            <option value="04">04 (Apr)</option>
+                            <option value="05">05 (May)</option>
+                            <option value="06">06 (Jun)</option>
+                            <option value="07">07 (Jul)</option>
+                            <option value="08">08 (Aug)</option>
+                            <option value="09">09 (Sep)</option>
+                            <option value="10">10 (Oct)</option>
+                            <option value="11">11 (Nov)</option>
+                            <option value="12">12 (Dec)</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="custom-select">
+							<select name="yearddl" id="yearddl">
+								<option value="22">2022</option>
+								<option value="23">2023</option>
+								<option value="24">2024</option>
+								<option value="25">2025</option>
+								<option value="26">2026</option>
+								<option value="27">2027</option>
+								<option value="28">2028</option>
+								<option value="29">2029</option>
+								<option value="30">2030</option>
+								<option value="31">2031</option>
+								<option value="32">2032</option>
+								<option value="33">2033</option>
+								<option value="34">2034</option>
+								<option value="35">2035</option>
+								<option value="36">2036</option>
+								<option value="37">2037</option>
+								<option value="38">2038</option>
+								<option value="39">2039</option>
+								<option value="40">2040</option>
+								<option value="21">2041</option>
+							</select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="js-basic-cta-button" class="w_button btn-order-now     ">
+                    <button>
+                      <span>COMPLETE PURCHASE</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="w_item w_item_1 section-guranteed" style="  ">
+                  <div class="w_inner">
+                    <div class="w_thumb">
+                      <picture>
+                        <img src="assets/images/guaranteed.png" alt="" class="no-lazy">
+                      </picture>
+                    </div>
+                    <div class="w_desc">
+                      <p>GUARANTEED <strong><span style="color: #29af5c;">SAFE</span></strong> CHECKOUT</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="guarantee-block ">
+                  <div class="w_outer">
+                    <div class="w_inner">
+                      <div class="w_item ">
+                        <div class="w_thumb">
+                          <img src="assets/images/guarantee.png" alt="" class="img-view no-lazy">
+                        </div>
+                        <div class="w_content_wrap">
+                          <div class="w_desc">
+                            <p><strong>30 DAY GUARANTEE:</strong>  If you are not completely thrilled with your HawkEyes - we are offering you a 30 day guarantee on all purchases. Simply send the item(s) back to us for a full refund or replacement, less S&H.</p>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> <!--/span-->
+                <div class="descriptions">
+                    <div class="form-group">
+		                <img src="assets/images/products.png">
+                    </div>
+                </div>
+            </div> <!--/row-->
+          </div> <!--/container-->
+        </section> <!-- /row-wrapper-->
+        <section class="section-3">
+          <div class="container">
+            <div id="widget-loader" class="loader-wrapper " style="display: none; opacity: 0;">
+              <div class="loader-content">
+                <div class="text">Stock Available!</div>
+                <div class="progress-bar-wrapper">
+                  <span class="progress-bar finish" style="width: 100%;"></span>
+                </div>
+              </div>
+            </div>
+            <div class="w_fomo_wrapper">
+              <div class="w_outer">
+                <div class="w_inner">
+                  <div class="w_item ">
+                    <div class="w_thumb">
+                      <img src="assets/images/glasses.png" alt="" class="img-view no-lazy">
+                    </div>
+                    <div class="w_content_wrap">
+                      <div class="w_desc">
+                        <p>Nancy. from Charlotte, NC <br>just purchased: <strong>HawkEye Driving Glasses<br></strong></p>
+                        <p class="just-now text-right">JUST NOW</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="gift-popup order-hpfaov">
+              <div class="wrap-modal">
+                <div class="wrap-gift">
+                  <div class="content">
+                    <h2><strong><span style="color: #3795f1;">WAIT A SECOND!<br></span></strong>You can get a FREE gift with purchase <br><strong>TODAY ONLY!</strong></h2>
+                    <p>Receive the amazing wiper blade renewal tool completely <strong>FREE</strong> with <br>your HawkEye purchase.<br><strong>NuWiper</strong> cleans and sharpens your old worn-out windshield wiper <br>blades, giving them a factory-fresh edge. You’ll drive safer with a <br>streak-free windshield and save hundreds of dollars on wiper blades!</p>
+                    <ul>
+                      <li class="banner-gift-img"><img src="assets/images/01-gif.gif" width="347" height="180" class=" b-loaded"></li>
+                      <li class="banner-gift-img"><img src="assets/images/02-img.png" width="310" height="180" class=" b-loaded"></li>
+                    </ul>
+                    <p>The regular price <span class="formatPrice">49.95</span> each, but you can get one (1) <strong>NuWiper <br>FREE today when you purchase HawkEye.</strong> It’s our gift to you to <br>help keep you safe on the road and save money!</p>
+                    <div class="btn-action">
+                      <a class="btn-claim">Claim Your Free Gift Now</a>
+                    </div>
+                  </div>
+                  <i class="icon-close"></i>
+                </div>
+              </div>
+              <input type="radio" id="txtMiniUpsellPID" data-id="27" class="input-hidden">
+              <input type="radio" id="txtMiniUpsellShippingID" data-id="25" class="input-hidden">
+            </div>
+          </div> <!--/container-->
+        </section> <!-- /row-wrapper-->
+        <section class="section-4">
+          <div class="container">
+            <div class="faq section-faq ">
+              <!--<h2 class="w_main_title"><span class="text">Have a Question? <span>See Our FAQs<span></span></span></span></h2>-->
+              <div class="w_outer">
+                <div class="w_qa_list">
+                  <div class="w_item ">
+                    <h3 class="w_toptext"><span>Question:</span> When should I use HawkEye?</h3>
+                    <div class="w_content_wrap">
+                      <div class="w_desc">
+                        <p>Answer:&nbsp;The main purpose of HawkEye is to combat the elements around you while driving at night. Wear HawkEye during your evening commute, in the rain, snow, or foggier conditions so you can focus on your driving and stay safe on the road.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="w_item ">
+                    <h3 class="w_toptext"><span>Question:</span> How does it work?</h3>
+                    <div class="w_content_wrap">
+                      <div class="w_desc">
+                        <p>Answer:&nbsp;HawkEye uses high-definition tinted lenses that are designed to provide your eyes comfort and clarity by reducing the glare from traffic and harsh lights.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="w_item ">
+                    <h3 class="w_toptext"><span>Question:</span> Can I wear them with my glasses?</h3>
+                    <div class="w_content_wrap">
+                      <div class="w_desc">
+                        <p>Answer: HawkEye fits over most prescription frames well, so you don’t have to adjust or change your glasses to use them.</p>
+                        <p></p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="w_item ">
+                    <h3 class="w_toptext"><span>Question:</span> Are HawkEyes uncomfortable to wear?</h3>
+                    <div class="w_content_wrap">
+                      <div class="w_desc">
+                        <p>Answer:&nbsp;No, HawkEye is lightweight but built to last, so you won’t even notice you’re wearing them!</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="w_item ">
+                    <h3 class="w_toptext"><span>Question:</span> I think I drive just fine at night. Do I really need HawkEye?</h3>
+                    <div class="w_content_wrap">
+                      <div class="w_desc">
+                        <p>Answer:&nbsp;Everyone can benefit from HawkEye. It promotes safe driving and helps lessen the chance of accidents. It also makes for a great gift for your family and friends who commute, and with the discounts you receive by buying more than one, you can save a lot of money too!</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="banner ">
+              <div class="w_outer" style="--img:url(assets/images/IMG_7529-Edit-min.jpg) ">
+                <div class="w_inner">
+	                
+	               <div class="w_item ">
+                    <div class="w_thumb">
+                      <img src="assets/images/jennifer.jpg" alt="" class="img-view b-loaded">
+                    </div>
+                    <div class="w_content_wrap">
+                      <h4 class="w_title">Jennifer B. <span>· Albuquerque, NM</span></h4>
+                      <div class="w_desc">
+                        <p>I always had trouble with my vision when driving at night, and glasses didn’t work for me. My friend told me about HawkEye, she said it works perfectly for her. I gave it a try, and I must say I’m surprised at how well it works! The best part is, I can wear it over my glasses, and I’m able to see everything so clear, it’s wonderful.</p>
+                        <ul class="comment-like">
+                          <li>Like</li>
+                          <li>· Reply</li>
+                          <li>· <i class="icon-fblike"></i> <span>28</span></li>
+                          <li class="time">· Feb. 27, 2024 5:32 PM</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+	                
+	               <div class="w_item ">
+                    <div class="w_thumb">
+                      <img src="assets/images/matt.jpg" alt="" class="img-view b-loaded">
+                    </div>
+                    <div class="w_content_wrap">
+                      <h4 class="w_title">Matt N. <span>· Topeka, KS</span></h4>
+                      <div class="w_desc">
+                        <p>HawkEye is freaking awesome. I highly recommend it!</p>
+                        <ul class="comment-like">
+                          <li>Like</li>
+                          <li>· Reply</li>
+                          <li>· <i class="icon-fblike"></i> <span>12</span></li>
+                          <li class="time">· Feb. 25, 2024 6:28 PM</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+	                
+	               <div class="w_item ">
+                    <div class="w_thumb">
+                      <img src="assets/images/james.jpg" alt="" class="img-view b-loaded">
+                    </div>
+                    <div class="w_content_wrap">
+                      <h4 class="w_title">James M. <span>· Cedar Rapids, IA</span></h4>
+                      <div class="w_desc">
+                        <p>I’m a truck driver and I’m always driving at night. When I started driving trucks, I never experienced a migraine. Recently, I got one so bad I couldn’t even focus on the road. I did some research and found HawkEye. I was convinced by all the positive reviews and ended up buying one. It has helped me see better at night and I haven’t experienced a migraine since I started using it! Thank you HawkEye!</p>
+                        <ul class="comment-like">
+                          <li>Like</li>
+                          <li>· Reply</li>
+                          <li>· <i class="icon-fblike"></i> <span>33</span></li>
+                          <li class="time">· Feb. 22, 2024 4:55 PM</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> <!--/container-->
+        </section> <!-- /row-wrapper-->
+        <section class="section-5">
+          <div class="container">
+            <div data-r="true" class="wysiwyg-content footer ">
+              <p><strong>© 2022 - Door Ringer</strong></p>
+              <ul>
+                <li><a href="terms.html" target="_blank">Terms &amp; Conditions</a></li>
+                <li><a href="privacy.html" target="_blank">Privacy Policy</a></li>
+                <li><a href="contact.html" target="_blank">Contact Us</a></li>
+                <li><a href="returns.html" target="_blank">Shipping & Returns</a></li>
+              </ul>
+            </div>
+            <div data-r="true" class="wysiwyg-content  ">
+              <div class="DMCA_Logo" style="text-align: center;"><a class="no-tracking" href="#" title="DMCA.com Protection Status" target="_blank"> <img src="assets/images/dmca-badge-w150-5x1-10.png" alt="DMCA.com Protection Status" class=" b-loaded"></a></div>
+              <script>
+                // <![CDATA[
+                (function() {
+                  var a = document.querySelector('.DMCA_Logo a');
+                  if (a) {
+                    a.href += (a.href.indexOf('?') >= 0 ? '&' : '?') + 'refurl=' + location.href;
+                  }
+                })();
+                // ]]>
+              </script>
+            </div>
+          </div> <!--/container-->
+        </section> <!-- /row-wrapper-->
+      </main>
+    </div>
+    <div id="error-modal" class="hidden">
+	    <div class="main">
+		    <div class="loader"></div>
+	    </div>
+    </div>
+    <div id="processing-modal" class="hidden">
+	    <div class="main">
+		    <h1>PROCESSING</h1>
+		    <div class="loader"></div>
+	    </div>
+    </div>
+
+<script>
+
+function validateEmail(email) {
+	const regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	return regex.test(email);
+}
+function validatePhone(phone) {
+	const regex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+	return regex.test(phone);
+}
+function validateAddress(address){
+	var regex = /[,#-\/\s\!\@\$.....]/gi; // ... add all the characters you need
+	return regex.test(address);
+}	
+function validate(){
+	errors = [];
+	var product = $("input[name='product']:checked").val();
+	if($("input[name='variants']:checked").val() == undefined){
+		errors.push('Please Select Style');
+	}	if($('#customer_firstname').val() == ''){
+		errors.push('First name is required');		
+	}
+	if($('#customer_lastname').val() == ''){
+		errors.push('Last name is required');		
+	}
+	if(!validateEmail($('#customer_email').val())){
+		errors.push('Invalid email address');
+	}
+	if(!validatePhone($('#customer_phone').val())){
+		errors.push('Invalid phone number');
+	}
+	if(!validateAddress($('#shipping_address1').val())){
+		errors.push('Invalid street address');
+	}
+	if($('#shipping_city').val() == ''){
+		errors.push('City is required');
+	}
+	if($('#shipping_province').val() == ''){
+		errors.push('Select State');
+	}
+	if($('#shipping_postal').val() == ''){
+		errors.push('Zip is required');
+	}
+	return errors;
+}
+
+pinfo = {"1":{"title":"1 Pair of HawkEye Lenses","desc":"1x HawkEye Driving Glasses","addons":{"case":{"desc":"1 Cases","price":10,"qty":1,"product_id":4}},"disclamer":"","id":1,"qty":1,"order":1,"msrp":"74.99","price":"49.95","shipping":{"US":"4.95","default":"14.99"},"tax":"0","discount":"35%","image":"\/assets\/images\/package-1-h.c-min.png","variants":["Classic","Modern"],"crmInfo":{"product_id":1,"billing_model":2,"qty":1,"campaign":6,"offer":6,"shipping":5,"countries":{"US":{"campaign":1,"offer":1,"shipping":3}}}},"2":{"title":"Buy 1 Get 1 Free - 2 Great Designs!","desc":"2x HawkEye Driving Glasses","addons":{"case":{"desc":"2 Cases","price":20,"qty":2,"product_id":4}},"id":2,"qty":2,"order":3,"default":true,"msrp":"149.98","price":"74.99","shipping":{"US":"0","default":"14.99"},"tax":"0","discount":"50%","image":"\/assets\/images\/package-2-h.c-min.png","variants":["Classic","Modern","Both"],"crmInfo":{"product_id":3,"billing_model":2,"qty":1,"campaign":6,"offer":6,"shipping":5,"countries":{"US":{"campaign":1,"offer":1,"shipping":2}}}},"3":{"title":"3 Pairs of HawkEye + 3 Cases + Expedited Shipping!","desc":"3x Hawk Eyes + 3x Cases + Exedited Shipping","addonsX":[1,2],"id":3,"qty":3,"order":2,"msrp":"260.55","price":"99.99","shipping":{"US":"0","default":"14.99"},"tax":"0","discount":"60%","image":"\/assets\/images\/package-3-h.c.1-min.png","variants":["Classic","Modern","Both"],"crmInfo":{"product_id":2,"billing_model":2,"qty":1,"campaign":6,"offer":6,"shipping":5,"countries":{"US":{"campaign":1,"offer":1,"shipping":2}}}},"4":{"title":"Holiday Package","desc":"2x HawkEye Driving Glasses + Spy Bulb","addons":{"case":{"desc":"2 Cases","price":20,"qty":2,"product_id":4}},"id":2,"qty":2,"order":3,"default":true,"msrp":"260.00","price":"109.99","shipping":{"US":"0","default":"14.99"},"tax":"0","discount":"60%","image":"\/assets\/images\/package-4h+spy-min.png","variants":["Classic","Modern","Both"],"crmInfo":{"product_id":167,"billing_model":2,"qty":1,"campaign":6,"offer":6,"shipping":5,"countries":{"US":{"campaign":1,"offer":1,"shipping":2}}}}};
+
+function displayPrice(){
+		selected = $("input[name='product']:checked").val();
+		console.log('selected',selected);
+		counrty = $("#shipping_country").val();
+		itemInfo = pinfo[selected];
+		
+		if(typeof(itemInfo.addons) == 'object' && typeof(itemInfo.addons.case) == 'object'){
+			$('#addon-case-price').html('$'+itemInfo.addons.case.price.toFixed(2));
+		} else {
+			$('#addon-case-price').html('INCLUDED');
+		}
+		$('.addon-box-case').addClass('addonBoxGray');
+		$('#addon-input-case').attr("disabled", true);
+
+		
+		if(itemInfo.addons){
+			Object.keys(itemInfo.addons).forEach(function(currentValue, index){
+				console.log(itemInfo.addons[currentValue]);
+				$('.addon-box-'+currentValue).removeClass('addonBoxGray');
+				$('#addon-input-'+currentValue).removeAttr("disabled");
+	
+			});
+		}
+		
+		var addonTotal = 0;
+		if($('#addon-input-case').is(':checked') && !$('#addon-input-case').prop('disabled')){
+			var addon = itemInfo.addons.case;
+			var thisAddonTotal = addon.price.toFixed(2);
+			addonTotal = addonTotal + parseFloat(thisAddonTotal);
+			$(".td-addon-case-price").html('$'+addon.price);
+			$(".td-addon-case-text").html(''+(addon.desc));
+			$("#tr-addon-case").show();
+		} else {
+			$("#tr-addon-case").hide();
+		}
+
+
+
+		$(".td-name").html(itemInfo.desc);
+        $(".td-price").html("$"+itemInfo.price);
+        if(counrty in itemInfo.shipping){
+	        console.log('use this');
+	        shippingprice = itemInfo.shipping[counrty];
+        } else {
+	        console.log(itemInfo.shipping, 'use default');
+	        shippingprice = itemInfo.shipping['default'];
+        }
+        $(".td-shipping").html("$"+shippingprice);
+        $(".td-taxes-fees").html("$"+itemInfo.tax);
+        $(".grand-total").html("$"+((parseFloat(itemInfo.price) + parseFloat(shippingprice) + parseFloat(addonTotal) + parseFloat(itemInfo.tax)).toFixed(2)));
+}
+
+function checkVariant(){
+	if($("input[name='variants']:checked").val() == undefined){
+		$('#btn-overlay').show();
+	} else {
+		$('#btn-overlay').hide();
+	}
+}
+
+function placeOrder(dataString){
+	$.ajax({
+        type: "POST",
+        url: "/processor/order.php",
+        data: dataString,
+        success: function(data) {
+            if(data.error_found == '0'){
+	            document.location.href = 'next3344.html?&amp;order_id='+data.order_id;
+            } else {
+	            $('#processing-modal').addClass('hidden');
+				cta_ready = true;
+	            alert(data.error_message);
+            }
+            console.log('RES - ',data);
+        }
+    });
+}
+
+$(function(){
+
+$('#addon-input-case').click();	$('#addon-input-case').change(function(){
+		displayPrice();
+	});
+	$('.allVariants').click(function(){
+		checkVariant();
+	});
+	$('.theVariants').change(function(){
+		$('.theVariants').next().find('.aVariant').removeClass('checked');
+		$(this).next().eq(0).find('.aVariant').addClass('checked');
+		//$(this).next().find('aVariant').addClass('checked');
+		checkVariant();
+		
+	});
+	$("input[name='product']").on('change', function() {
+		$("input[name='product']").parent().siblings('.variants').addClass('hidden');
+		$("input[name='product']:checked").parent().siblings('.variants').removeClass('hidden');
+		$('.eachVariant').hide();
+		$('.eachVariant input').prop('checked', false);
+		$('.theVariants').next().find('.aVariant').removeClass('checked');
+		$.each($(this).data('variants'),function(i,val){
+			$('.var-'+val).show();
+		});
+
+		$("input[name='product']").parent().parent().removeClass('checked-item');
+		$("input[name='product']:checked").parent().parent().addClass('checked-item');
+		displayPrice();
+		checkVariant();
+	});
+	$('.btn-next').click(function(){
+		$('.orderst-form').removeClass('hidden');
+		$('.btn-next').addClass('hidden');
+	});
+	$("input[name='radio_choose_billing']").on('change', function(){
+		if($("input[name='radio_choose_billing']:checked").val()=='yes'){
+			$('.js_choose_billing').removeClass('clicked');
+			$('.frmBilling').addClass('hidden');
+			yeah = 123;
+		} else {
+			$('.js_choose_billing').addClass('clicked');
+			$('.frmBilling').removeClass('hidden');
+			yeah = 234;
+		}
+	});
+
+
+
+
+	cta_ready = true;
+	$('#js-basic-cta-button').click(function(){
+		if(cta_ready){
+			var errors = validate();
+			if(errors.length == 0){
+				cta_ready = false;
+				$('#exmonth').val($('#monthddl').val());
+				$('#exyear').val($('#yearddl').val())
+				var frmCustomer	  = $('#frmCustomer').serialize();
+				var frmShipping	  = $('#frmShipping').serialize();
+				var frmBilling 	  = $('#frmBilling').serialize();
+				var frmCreditCard = $('#frmCreditCard').serialize();
+				var product = $("input[name='product']:checked").val();
+				var fQty = selectedQtys();
+				var addonsArray = [];
+						if($('#addon-input-case').is(':checked') && !$('#addon-input-case').prop('disabled')){
+					addonsArray.push('case');
+				}
+						if(addonsArray.length>=1){
+					var addons = '&addons='+JSON.stringify(addonsArray);
+				} else {
+					var addons = '';
+				}
+				var variants = '&variant='+$("input[name='variants']:checked").val();
+				dataArray = [frmCustomer, frmShipping, frmBilling, frmCreditCard];
+				dataString = frmCustomer+'&'+frmShipping+'&'+frmBilling+'&'+frmCreditCard+"&product="+product+"&fQty="+fQty+variants+addons;
+				console.log(dataArray, dataString);
+				$('#processing-modal').removeClass('hidden');
+				placeOrder(dataString);
+			} else {
+				let text = errors.join('<br>');
+				$('#error-modal .main').html(text);
+				$('#error-modal').removeClass('hidden');
+				
+			}
+		}
+//		var datastring = $('#frmCreditCard').serialize();
+	});
+	$('#error-modal').click(function(){
+		$('#error-modal').addClass('hidden');
+	})
+// 	radio_different_shipping
+
+// 	$("#product_2").trigger('click');
+});
+</script>
+<script>
+var countrycurrencyInfo = {"US":"$","CA":"$","AU":"$","NZ":"$","GB":"\u00a3","IT":"\u20ac","IE":"\u20ac","DE":"\u20ac","FR":"\u20ac"};
+var countryInfo = {"US":{"AL":"Alabama","AK":"Alaska","AS":"American Samoa","AZ":"Arizona","AR":"Arkansas","UM-81":"Baker Island","CA":"California","CO":"Colorado","CT":"Connecticut","DE":"Delaware","DC":"District of Columbia","FL":"Florida","GA":"Georgia","GU":"Guam","HI":"Hawaii","UM-84":"Howland Island","ID":"Idaho","IL":"Illinois","IN":"Indiana","IA":"Iowa","UM-86":"Jarvis Island","UM-67":"Johnston Atoll","KS":"Kansas","KY":"Kentucky","UM-89":"Kingman Reef","LA":"Louisiana","ME":"Maine","MD":"Maryland","MA":"Massachusetts","MI":"Michigan","UM-71":"Midway Atoll","MN":"Minnesota","MS":"Mississippi","MO":"Missouri","MT":"Montana","UM-76":"Navassa Island","NE":"Nebraska","NV":"Nevada","NH":"New Hampshire","NJ":"New Jersey","NM":"New Mexico","NY":"New York","NC":"North Carolina","ND":"North Dakota","MP":"Northern Mariana Islands","OH":"Ohio","OK":"Oklahoma","OR":"Oregon","UM-95":"Palmyra Atoll","PA":"Pennsylvania","PR":"Puerto Rico","RI":"Rhode Island","SC":"South Carolina","SD":"South Dakota","TN":"Tennessee","TX":"Texas","UM":"United States Minor Outlying Islands","VI":"United States Virgin Islands","UT":"Utah","VT":"Vermont","VA":"Virginia","UM-79":"Wake Island","WA":"Washington","WV":"West Virginia","WI":"Wisconsin","WY":"Wyoming"},"CA":{"AB":"Alberta","BC":"British Columbia","MB":"Manitoba","NB":"New Brunswick","NL":"Newfoundland and Labrador","NT":"Northwest Territories","NS":"Nova Scotia","NU":"Nunavut","ON":"Ontario","PE":"Prince Edward Island","QC":"Quebec","SK":"Saskatchewan","YT":"Yukon"},"AU":{"ACT":"Australian Capital Territory","NSW":"New South Wales","NT":"Northern Territory","QLD":"Queensland","SA":"South Australia","TAS":"Tasmania","VIC":"Victoria","WA":"Western Australia"},"NZ":{"AUK":"Auckland Region","BOP":"Bay of Plenty Region","CAN":"Canterbury Region","CIT":"Chatham Islands","GIS":"Gisborne District","HKB":"Hawke's Bay Region","MWT":"Manawatu-Wanganui Region","MBH":"Marlborough Region","NSN":"Nelson Region","NTL":"Northland Region","OTA":"Otago Region","STL":"Southland Region","TKI":"Taranaki Region","TAS":"Tasman District","WKO":"Waikato Region","WGN":"Wellington Region","WTC":"West Coast Region"},"GB":{"ABE":"Aberdeen","ABD":"Aberdeenshire","ANS":"Angus","ANT":"Antrim","ANN":"Antrim and Newtownabbey","ARD":"Ards","AND":"Ards and North Down","AGB":"Argyll and Bute","ARM":"Armagh City and District Council","ABC":"Armagh, Banbridge and Craigavon","SH-AC":"Ascension Island","BLA":"Ballymena Borough","BLY":"Ballymoney","BNB":"Banbridge","BNS":"Barnsley","BAS":"Bath and North East Somerset","BDF":"Bedford","BFS":"Belfast district","BIR":"Birmingham","BBD":"Blackburn with Darwen","BPL":"Blackpool","BGW":"Blaenau Gwent County Borough","BOL":"Bolton","BMH":"Bournemouth","BRC":"Bracknell Forest","BRD":"Bradford","BGE":"Bridgend County Borough","BNH":"Brighton and Hove","BKM":"Buckinghamshire","BUR":"Bury","CAY":"Caerphilly County Borough","CLD":"Calderdale","CAM":"Cambridgeshire","CMN":"Carmarthenshire","CKF":"Carrickfergus Borough Council","CSR":"Castlereagh","CCG":"Causeway Coast and Glens","CBF":"Central Bedfordshire","CGN":"Ceredigion","CHE":"Cheshire East","CHW":"Cheshire West and Chester","CRF":"City and County of Cardiff","SWA":"City and County of Swansea","BST":"City of Bristol","DER":"City of Derby","KHL":"City of Kingston upon Hull","LCE":"City of Leicester","LND":"City of London","NGM":"City of Nottingham","PTE":"City of Peterborough","PLY":"City of Plymouth","POR":"City of Portsmouth","STH":"City of Southampton","STE":"City of Stoke-on-Trent","SND":"City of Sunderland","WSM":"City of Westminster","WLV":"City of Wolverhampton","YOR":"City of York","CLK":"Clackmannanshire","CLR":"Coleraine Borough Council","CWY":"Conwy County Borough","CKT":"Cookstown District Council","CON":"Cornwall","DUR":"County Durham","COV":"Coventry","CGV":"Craigavon Borough Council","CMA":"Cumbria","DAL":"Darlington","DEN":"Denbighshire","DBY":"Derbyshire","DRS":"Derry City and Strabane","DRY":"Derry City Council","DEV":"Devon","DNC":"Doncaster","DOR":"Dorset","DOW":"Down District Council","DUD":"Dudley","DGY":"Dumfries and Galloway","DND":"Dundee","DGN":"Dungannon and South Tyrone Borough Council","EAY":"East Ayrshire","EDU":"East Dunbartonshire","ELN":"East Lothian","ERW":"East Renfrewshire","ERY":"East Riding of Yorkshire","ESX":"East Sussex","EDH":"Edinburgh","ENG":"England","ESS":"Essex","FAL":"Falkirk","FMO":"Fermanagh and Omagh","FER":"Fermanagh District Council","FIF":"Fife","FLN":"Flintshire","GAT":"Gateshead","GLG":"Glasgow","GLS":"Gloucestershire","GWN":"Gwynedd","HAL":"Halton","HAM":"Hampshire","HPL":"Hartlepool","HEF":"Herefordshire","HRT":"Hertfordshire","HLD":"Highland","IVC":"Inverclyde","IOW":"Isle of Wight","IOS":"Isles of Scilly","KEN":"Kent","KIR":"Kirklees","KWL":"Knowsley","LAN":"Lancashire","LRN":"Larne Borough Council","LDS":"Leeds","LEC":"Leicestershire","LMV":"Limavady Borough Council","LIN":"Lincolnshire","LBC":"Lisburn and Castlereagh","LSB":"Lisburn City Council","LIV":"Liverpool","BDG":"London Borough of Barking and Dagenham","BNE":"London Borough of Barnet","BEX":"London Borough of Bexley","BEN":"London Borough of Brent","BRY":"London Borough of Bromley","CMD":"London Borough of Camden","CRY":"London Borough of Croydon","EAL":"London Borough of Ealing","ENF":"London Borough of Enfield","HCK":"London Borough of Hackney","HMF":"London Borough of Hammersmith and Fulham","HRY":"London Borough of Haringey","HRW":"London Borough of Harrow","HAV":"London Borough of Havering","HIL":"London Borough of Hillingdon","HNS":"London Borough of Hounslow","ISL":"London Borough of Islington","LBH":"London Borough of Lambeth","LEW":"London Borough of Lewisham","MRT":"London Borough of Merton","NWM":"London Borough of Newham","RDB":"London Borough of Redbridge","RIC":"London Borough of Richmond upon Thames","SWK":"London Borough of Southwark","STN":"London Borough of Sutton","TWH":"London Borough of Tower Hamlets","WFT":"London Borough of Waltham Forest","WND":"London Borough of Wandsworth","MFT":"Magherafelt District Council","MAN":"Manchester","MDW":"Medway","MTY":"Merthyr Tydfil County Borough","WGN":"Metropolitan Borough of Wigan","MEA":"Mid and East Antrim","MUL":"Mid Ulster","MDB":"Middlesbrough","MLN":"Midlothian","MIK":"Milton Keynes","MON":"Monmouthshire","MRY":"Moray","MYL":"Moyle District Council","NTL":"Neath Port Talbot County Borough","NET":"Newcastle upon Tyne","NWP":"Newport","NYM":"Newry and Mourne District Council","NMD":"Newry, Mourne and Down","NTA":"Newtownabbey Borough Council","NFK":"Norfolk","NAY":"North Ayrshire","NDN":"North Down Borough Council","NEL":"North East Lincolnshire","NLK":"North Lanarkshire","NLN":"North Lincolnshire","NSM":"North Somerset","NTY":"North Tyneside","NYK":"North Yorkshire","NTH":"Northamptonshire","NIR":"Northern Ireland","NBL":"Northumberland","NTT":"Nottinghamshire","OLD":"Oldham","OMH":"Omagh District Council","ORK":"Orkney Islands","ELS":"Outer Hebrides","OXF":"Oxfordshire","PEM":"Pembrokeshire","PKN":"Perth and Kinross","POL":"Poole","POW":"Powys","RDG":"Reading","RCC":"Redcar and Cleveland","RFW":"Renfrewshire","RCT":"Rhondda Cynon Taf","RCH":"Rochdale","ROT":"Rotherham","GRE":"Royal Borough of Greenwich","KEC":"Royal Borough of Kensington and Chelsea","KTT":"Royal Borough of Kingston upon Thames","RUT":"Rutland","SH-HL":"Saint Helena","SLF":"Salford","SAW":"Sandwell","SCT":"Scotland","SCB":"Scottish Borders","SFT":"Sefton","SHF":"Sheffield","ZET":"Shetland Islands","SHR":"Shropshire","SLG":"Slough","SOL":"Solihull","SOM":"Somerset","SAY":"South Ayrshire","SGC":"South Gloucestershire","SLK":"South Lanarkshire","STY":"South Tyneside","SOS":"Southend-on-Sea","SHN":"St Helens","STS":"Staffordshire","STG":"Stirling","SKP":"Stockport","STT":"Stockton-on-Tees","STB":"Strabane District Council","SFK":"Suffolk","SRY":"Surrey","SWD":"Swindon","TAM":"Tameside","TFW":"Telford and Wrekin","THR":"Thurrock","TOB":"Torbay","TOF":"Torfaen","TRF":"Trafford","UKM":"United Kingdom","VGL":"Vale of Glamorgan","WKF":"Wakefield","WLS":"Wales","WLL":"Walsall","WRT":"Warrington","WAR":"Warwickshire","WBK":"West Berkshire","WDU":"West Dunbartonshire","WLN":"West Lothian","WSX":"West Sussex","WIL":"Wiltshire","WNM":"Windsor and Maidenhead","WRL":"Wirral","WOK":"Wokingham","WOR":"Worcestershire","WRX":"Wrexham County Borough"},"IT":{"AG":"Agrigento","AL":"Alessandria","AN":"Ancona","AO":"Aosta","AR":"Arezzo","AP":"Ascoli Piceno","AT":"Asti","AV":"Avellino","BA":"Bari","BT":"Barletta-Andria-Trani","BL":"Belluno","BN":"Benevento","BG":"Bergamo","BI":"Biella","BO":"Bologna","BS":"Brescia","BR":"Brindisi","CA":"Cagliari","CL":"Caltanissetta","CB":"Campobasso","CE":"Caserta","CT":"Catania","CZ":"Catanzaro","CH":"Chieti","CO":"Como","CS":"Cosenza","CR":"Cremona","KR":"Crotone","CN":"Cuneo","EN":"Enna","FM":"Fermo","FE":"Ferrara","FI":"Florence","FG":"Foggia","FC":"Forl\u00ec-Cesena","FR":"Frosinone","GE":"Genoa","GO":"Gorizia","GR":"Grosseto","IM":"Imperia","IS":"Isernia","SP":"La Spezia","AQ":"L'Aquila","LT":"Latina","LE":"Lecce","LC":"Lecco","LI":"Livorno","LO":"Lodi","LU":"Lucca","MC":"Macerata","MN":"Mantua","MS":"Massa and Carrara","MT":"Matera","ME":"Messina","MI":"Milan","MO":"Modena","MB":"Monza and Brianza","NA":"Naples","NO":"Novara","NU":"Nuoro","OR":"Oristano","PD":"Padua","PA":"Palermo","PR":"Parma","PV":"Pavia","PG":"Perugia","PU":"Pesaro and Urbino","PE":"Pescara","PC":"Piacenza","PI":"Pisa","PT":"Pistoia","PN":"Pordenone","PZ":"Potenza","PO":"Prato","RG":"Ragusa","RA":"Ravenna","RC":"Reggio Calabria","RE":"Reggio Emilia","RI":"Rieti","RN":"Rimini","RM":"Rome","RO":"Rovigo","SA":"Salerno","SS":"Sassari","SV":"Savona","SI":"Siena","SO":"Sondrio","SU":"South Sardinia","BZ":"South Tyrol","SR":"Syracuse","TA":"Taranto","TE":"Teramo","TR":"Terni","TP":"Trapani","TN":"Trento","TV":"Treviso","TS":"Trieste","TO":"Turin","UD":"Udine","VA":"Varese","VE":"Venice","VB":"Verbano-Cusio-Ossola","VC":"Vercelli","VR":"Verona","VV":"Vibo Valentia","VI":"Vicenza","VT":"Viterbo"},"IE":{"CW":"Carlow","CN":"Cavan","CE":"Clare","CO":"Cork","DL":"Donegal","D":"Dublin","G":"Galway","KY":"Kerry","KE":"Kildare","KK":"Kilkenny","LS":"Laois","LM":"Leitrim","LK":"Limerick","LD":"Longford","LH":"Louth","MO":"Mayo","MH":"Meath","MN":"Monaghan","OY":"Offaly","RN":"Roscommon","SO":"Sligo","TA":"Tipperary","WD":"Waterford","WH":"Westmeath","WX":"Wexford","WW":"Wicklow"},"DE":{"BW":"Baden-W\u00fcrttemberg","BY":"Bavaria","BE":"Berlin","BB":"Brandenburg","HB":"Bremen","HH":"Hamburg","HE":"Hesse","NI":"Lower Saxony","MV":"Mecklenburg-Vorpommern","NW":"North Rhine-Westphalia","RP":"Rhineland-Palatinate","SL":"Saarland","SN":"Saxony","ST":"Saxony-Anhalt","SH":"Schleswig-Holstein","TH":"Thuringia"},"FR":{"ARA":"Auvergne-Rh\u00f4ne-Alpes","BFC":"Bourgogne-Franche-Comt\u00e9","BRE":"Brittany","CVL":"Centre","COR":"Corsica","GES":"Grand Est","HDF":"Hauts-de-France","IDF":"\u00cele-de-France","NOR":"Normandy","NAQ":"Nouvelle-Aquitaine","OCC":"Occitanie","PDL":"Pays de la Loire","PAC":"Provence-Alpes-C\u00f4te d'Azur"}};
+var countries = {"US":"United States","AU":"Australia","CA":"Canada","FR":"France","DE":"Germany","IE":"Ireland","IT":"Italy","NZ":"New Zealand","GB":"United Kingdom"};
+	$(function(){
+		$('#shipping_country').find('option').remove();
+		$('#shipping_province').find('option').remove();
+
+		var flag = true;
+		$.each(countries, function (i, item) {
+		    $('#shipping_country').append($('<option>', { 
+		        value: i,
+		        text : item 
+		    }));
+		    if(flag){
+				$('.currency').html(countrycurrencyInfo[i]);
+			    flag = false;
+			    $.each(countryInfo[i], function (i2, item2) {
+				    $('#shipping_province').append($('<option>', { 
+				        value: i2,
+				        text : item2 
+				    }));
+				});
+		    }
+		});
+		$('#shipping_country').change(function(){
+			state = $(this).val();
+			$('.currency').html(countrycurrencyInfo[state]);
+			$('#shipping_province').find('option').remove();
+			console.log(countryInfo[state], state);
+			
+			//forEach(countryInfo[state]){}
+			
+			$.each(countryInfo[state], function (i, item) {
+			    $('#shipping_province').append($('<option>', { 
+			        value: i,
+			        text : item 
+			    }));
+			});
+			displayPrice();
+			//alert($(this).val());
+		});
+		if(countrycurrencyInfo['BD'] != undefined){
+			$('#shipping_province option[value=BD]').prop('selected', true).trigger('change');
+			//$('.currency').html(countrycurrencyInfo['BD']);
+		}
+	});
+	
+</script>
+<script>
+
+function slideA(product){
+	let sliderA = $('#productC_'+product).find('.sliderA');
+	let sliderB = $('#productC_'+product).find('.sliderB');
+	if(parseInt(sliderA.val())>parseInt(sliderB.val())){
+		sliderB.val(sliderA.val());
+	}
+	fixDisplay(product)
+}
+
+/*
+function slideB(product){
+	let sliderA = $('#productC_'+product).find('.sliderA');
+	let sliderB = $('#productC_'+product).find('.sliderB');
+	if(parseInt(sliderB.val())<parseInt(sliderA.val())){
+		sliderA.val(sliderB.val());
+	}
+	fixDisplay(product)
+}
+*/
+
+function selectedQtys(){
+	var product = $("input[name='product']:checked").val();
+	var qty;
+	array = [];
+// 	if(product == 1){
+		variant = $("input[name='variants']:checked").val();
+		switch(product){
+			case "1":
+			case "4":
+				qty = 1;
+				break;
+			case "2":
+			case "3":
+				qty = 2;
+				break;
+		}
+		
+		switch(variant){
+			case "White":
+				array = [0,qty];
+				break;
+			case "Black":
+				array = [qty,0];
+				break;
+			case "Both":
+				array = [1,1];
+				break;
+		}
+/*
+		if(variant == "Both"){
+			array = [1,1];
+		} else {
+			$("input[name='variant_1']").each(function(){
+			    if($(this).is(':checked')){
+				    array.push('1');
+			    } else {
+				    array.push('0');	    
+			    }
+			})
+		}
+*/
+/*
+	} else {
+		let sliderA = $('#productC_'+product).find('.sliderA');
+// 		let sliderB = $('#productC_'+product).find('.sliderB');
+		var qty1 = parseInt(sliderA.val());
+		var qty2 = parseInt(sliderA.attr('max')) - qty1;
+// 		var qty3 = parseInt(sliderA.attr('max')) - qty2 - qty1;
+		var array = [qty1, qty2];
+	}
+*/
+	return array.join();
+}
+
+function fixDisplay(product){
+	let sliderA = $('#productC_'+product).find('.sliderA');
+// 	let sliderB = $('#productC_'+product).find('.sliderB');
+	var qty1 = parseInt(sliderA.val());
+	var qty2 = parseInt(sliderA.attr('max')) - qty1;
+// 	var qty3 = parseInt(sliderA.attr('max')) - qty2 - qty1;
+	console.log(qty1, qty2);
+	$('#productC_'+product).find(".qty1").html((qty1 == 0)?'':qty1);
+	$('#productC_'+product).find(".qty1").css('flex',qty1 + ' 1 0%');
+// 	document.getElementById("qty1").style.flex = qty1;
+	$('#productC_'+product).find(".qty2").html((qty2 == 0)?'':qty2);
+	$('#productC_'+product).find(".qty2").css('flex',qty2 + ' 1 0%');
+// 	document.getElementById("qty2").style.flex = qty2;
+/*
+	$('#productC_'+product).find(".qty3").html((qty3 == 0)?'':qty3);
+	$('#productC_'+product).find(".qty3").css('flex',qty3 + ' 1 0%');
+*/
+// 	document.getElementById("qty3").style.flex = qty3;
+	
+}
+
+fixDisplay(2);
+fixDisplay(3);
+fixDisplay(4);
+
+$(function(){
+	$("#product_2").trigger('click');
+});
+
+</script>
+
+</body>
+
+<!--   smartsj.com/hawkeye/checkout.php?pid=2 by smartsj.com Website Copier/3.x [XR&CO'2014], Wed, 28 Feb 2024 04:59:02 GMT -->
+</html>

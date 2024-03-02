@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&amp;display=swap');
+
+
+a {
+    text-decoration:none;
+    font-weight:500;
+    color:#fff;
+}
+a:hover {
+    color:#7c7c7c
+}
+.arrow  {
+    color:#fff;
+}
+.arrow i {
+    font-size:35px;
+}
+p {
+    font-size:14px;
+}
+.fa-solid, .fas {
+    font-size: 20px;
+}
+p.card-text.small {
+    font-size: 1em;
+}
+.small, small {
+     font-size: .7em;
+}
+.bg-black {
+    background-color: #000;
+}
+.bg-white {
+    background-color: #fff;
+}
+.r-35 {
+    border-radius: 35px;
+}
+
+.accordion-item:first-of-type .accordion-button {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.accordion-item:first-of-type {
+    border-top-left-radius: 0rem;
+    border-top-right-radius: 0rem;
+}
+.accordion-button:not(.collapsed) {
+    color: inherit;
+    background-color: transparent;
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 13%);
+}
+
+.accordion-item {
+    background-color: transparent;
+    border-top: 1px solid rgba(0,0,0,.125);
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    border-left: 0px solid rgba(0,0,0,.125);
+    border-right: 0px solid rgba(0,0,0,.125);
+}
+.accordion-button::before {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 15px;
+    background-image:initial;
+    content: url(../../img/circle-plus.html);
+    font-family: "Font Awesome 6 Free";
+    background-size: 1.25rem;
+    transition: transform .2s ease-in-out;
+}
+.accordion-button:not(.collapsed)::before {
+    background-image:initial;
+    content: url(../../img/circle-minus.html);
+    transform: rotate(-180deg);
+}
+.accordion-button::after {
+    flex-shrink: 0;
+    width: 0;
+    height: 0;
+    margin-left: auto;
+    background-image:initial;
+    background-size: 1.25rem;
+    transition: transform .2s ease-in-out;
+}
+.accordion-button:not(.collapsed)::after {
+    background-image:initial;
+    transform: rotate(-180deg);
+}
+.accordion-button {
+    width: 100%;
+    background-color: transparent;
+}
+ #name,#email,#message {
+    border-bottom: 1px solid #000;
+    font-size: .75rem;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    background-color: transparent;
+    border-radius: 0px;
+}
+.product {
+    padding-top: 75px!important;
+    padding-bottom: 25px!important;
+} 
+.vh-90 {
+    height: 90vh;
+}
+.vh-90 {
+    height: 95vh;
+}
+.vh-600 {
+    height: 600px;
+}
+.vh-350 {
+    height: 350px;
+}
+.vh-450 {
+    height: 450px;
+}
+.w-90 {
+    width: 90%!important;
+}
+.nav-tabs {
+    border-bottom: 0px solid #dee2e6;
+}
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: #ffb400;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.nav-tabs:hover .nav-link:hover {
+    margin-bottom: -1px;
+    background: 0 0;
+    border: 0px solid transparent;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    color: #ffb400;
+}
+
+.nav-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #FFF;
+    text-decoration: none;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+}
+
+.main-product-icon {
+    height: 45px;
+}
+
+.specs p {
+    font-size: 17px;
+}
+#featured-merch li {
+    list-style-type: initial;
+    margin-left: 15px;
+    font-size: 14px;
+}
+.small, small {
+   font-size: 1em;
+}
+.bg-dark {
+    background-color: #000!important;
+}
+#home {
+    background-color: #5e7583;
+    background-size: cover;
+    background-position: center right;
+    background-image: url(../../images/banner.jpg);
+    
+} 
+
+.zoom-bg {
+    transition: all 1s;
+    background-position: center center;
+    background-size: 100%;
+}
+.zoom-bg:hover {
+    background-size: 110%;
+}
+.picture2 {
+    display: none;
+}
+.thumbnail:hover .picture1 {
+    display: none;
+}
+.thumbnail:hover .picture2 {
+    display: block;
+}
+@media (max-width: 819px) {
+}  
+@media (max-width: 1298px) {
+}
+
+@media (max-width: 600px) {
+#home {
+    background-color: #5e7583;
+    background-size: cover;
+    background-position: center right;
+    background-image: inherit;
+    
+}    
+.s-logo {
+    background-image: url(../../img/s-logo-bg.html);
+    background-size: 100%;
+    background-repeat:no-repeat;
+    background-position: top right;
+} 
+.main-product-icon {
+    height: 30px;
+}
+#content h5 {
+    font-size: 14px;
+}
+.product-battery {
+    width: 100%;
+    padding: 20px;
+}
+.vh-90 {
+    height: auto;
+}
+}
+@media (max-width: 300px) {
+.main-product-icon {
+    height: 40px
+}
+}
